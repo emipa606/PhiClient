@@ -13,7 +13,7 @@ Non-steam version:
 https://github.com/emipa606/PhiClient
 
 - For the client to be able to connect the server must be running an updated version as well
-You can donload it from the GitHub-repo here:
+You can download it from the GitHub-repo here:
 https://github.com/emipa606/PhiClient/releases/tag/Server-1.1
 	
 --- Original Description ---
