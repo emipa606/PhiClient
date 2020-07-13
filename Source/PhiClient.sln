@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhiData", "03-PhiData\PhiData.csproj", "{DF95144F-7545-4179-ABFF-E7AE394665ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhiClient", "PhiClient\PhiClient.csproj", "{DF95144F-7545-4179-ABFF-E7AE394665EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketLibrary", "SocketLibrary\SocketLibrary.csproj", "{DF95144F-7545-4179-ABFF-E7AE394665EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "websocket-sharp", "websocket-sharp\websocket-sharp.csproj", "{DF95144F-7545-4179-ABFF-E7AE394665EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhiServer", "PhiServer\PhiServer.csproj", "{793DB79E-9C7F-42AB-AC11-C270FC25BF74}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF95144F-7545-4179-ABFF-E7AE394665ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF95144F-7545-4179-ABFF-E7AE394665EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{793DB79E-9C7F-42AB-AC11-C270FC25BF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{793DB79E-9C7F-42AB-AC11-C270FC25BF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{793DB79E-9C7F-42AB-AC11-C270FC25BF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{793DB79E-9C7F-42AB-AC11-C270FC25BF74}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6FA673B-B77C-45FA-A546-EA65FFD92597}
+	EndGlobalSection
+EndGlobal
