@@ -57,13 +57,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="01-websocket-sharp">
-      <HintPath>..\..\1.1\Assemblies\01-websocket-sharp.dll</HintPath>
+      <HintPath>..\..\1.2\Assemblies\01-websocket-sharp.dll</HintPath>
     </Reference>
     <Reference Include="02-SocketLibrary">
-      <HintPath>..\..\1.1\Assemblies\02-SocketLibrary.dll</HintPath>
+      <HintPath>..\..\1.2\Assemblies\02-SocketLibrary.dll</HintPath>
     </Reference>
     <Reference Include="03-PhiData">
-      <HintPath>..\..\1.1\Assemblies\03-PhiData.dll</HintPath>
+      <HintPath>..\..\1.2\Assemblies\03-PhiData.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
