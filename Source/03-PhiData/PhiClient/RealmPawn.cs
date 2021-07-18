@@ -8,431 +8,481 @@ using Verse;
 
 namespace PhiClient
 {
-	// Token: 0x02000015 RID: 21
-	[Serializable]
-	public class RealmPawn
-	{
-		// Token: 0x06000037 RID: 55 RVA: 0x000029D0 File Offset: 0x00000BD0
-		public static RealmPawn ToRealmPawn(Pawn pawn, RealmData realmData)
-		{
-			RealmPawn realmPawn = new RealmPawn();
-			string[] array = pawn.Name.ToString().Split(new char[]
-			{
-				' '
-			});
-			if (array.Count<string>() == 3)
-			{
-				array[1] = array[1].Replace("'", "");
-			}
-			realmPawn.name = array;
-			realmPawn.kindDefName = pawn.kindDef.defName;
-			realmPawn.ageBiologicalTicks = pawn.ageTracker.AgeBiologicalTicks;
-			realmPawn.ageChronologicalTicks = pawn.ageTracker.AgeChronologicalTicks;
-			realmPawn.gender = pawn.gender;
-			if (!pawn.health.hediffSet.HasHediff(PhiHediffDefOf.Phi_Key, false))
-			{
-				pawn.health.AddHediff(PhiHediffDefOf.Phi_Key, null, null, null);
-				pawn.health.hediffSet.GetFirstHediffOfDef(PhiHediffDefOf.Phi_Key, false).Severity = Rand.Range(0f, float.MaxValue);
-			}
-			if (pawn.skills != null)
-			{
-				List<RealmSkillRecord> list = new List<RealmSkillRecord>();
-				foreach (SkillRecord skillRecord in pawn.skills.skills)
-				{
-					list.Add(new RealmSkillRecord
-					{
-						skillDefLabel = skillRecord.def.label,
-						level = skillRecord.Level,
-						passion = skillRecord.passion
-					});
-				}
-				realmPawn.skills = list;
-			}
-			if (pawn.story != null)
-			{
-				List<RealmTrait> list2 = new List<RealmTrait>();
-				foreach (Trait trait in pawn.story.traits.allTraits)
-				{
-					list2.Add(new RealmTrait
-					{
-						traitDefName = trait.def.defName,
-						degree = trait.Degree
-					});
-				}
-				realmPawn.traits = list2;
-				Color color = pawn.story.hairColor;
-				realmPawn.hairColor = new float[]
-				{
-					color.r,
-					color.g,
-					color.b,
-					color.a
-				};
-				realmPawn.bodyTypeDefName = pawn.story.bodyType.defName;
-				realmPawn.crownType = pawn.story.crownType;
-				realmPawn.hairDefName = pawn.story.hairDef.defName;
-				realmPawn.childhoodKey = pawn.story.childhood.identifier;
-				RealmPawn realmPawn2 = realmPawn;
-				Backstory adulthood = pawn.story.adulthood;
-				realmPawn2.adulthoodKey = ((adulthood != null) ? adulthood.identifier : null);
-				realmPawn.melanin = pawn.story.melanin;
-			}
-			if (pawn.equipment != null)
-			{
-				List<RealmThing> list3 = new List<RealmThing>();
-				foreach (ThingWithComps thing in pawn.equipment.AllEquipmentListForReading)
-				{
-					list3.Add(realmData.ToRealmThing(thing));
-				}
-				realmPawn.equipments = list3;
-			}
-			if (pawn.apparel != null)
-			{
-				List<RealmThing> list4 = new List<RealmThing>();
-				foreach (Apparel thing2 in pawn.apparel.WornApparel)
-				{
-					list4.Add(realmData.ToRealmThing(thing2));
-				}
-				realmPawn.apparels = list4;
-			}
-			if (pawn.inventory != null)
-			{
-				List<RealmThing> list5 = new List<RealmThing>() ?? new List<RealmThing>();
-				foreach (Thing thing3 in pawn.inventory.innerContainer)
-				{
-					list5.Add(realmData.ToRealmThing(thing3));
-				}
-				realmPawn.inventory = list5;
-			}
-			List<RealmHediff> list6 = new List<RealmHediff>();
-			foreach (Hediff hediff in pawn.health.hediffSet.hediffs)
-			{
-				ImmunityRecord immunityRecord = pawn.health.immunity.GetImmunityRecord(hediff.def);
-				int bodyPartIndex = -1;
-				BodyPartRecord part = hediff.Part;
-				if (((part != null) ? part.def : null) != null)
-				{
-					if (!pawn.RaceProps.body.AllParts.Contains(hediff.Part))
-					{
-						string format = "Skipping bodypart {0}, not found in body.";
-						BodyPartRecord part2 = hediff.Part;
-						object arg;
-						if (part2 == null)
-						{
-							arg = null;
-						}
-						else
-						{
-							BodyPartDef def = part2.def;
-							arg = ((def != null) ? def.defName : null);
-						}
-						Log.Error(string.Format(format, arg), false);
-						continue;
-					}
-					bodyPartIndex = pawn.RaceProps.body.GetIndexOfPart(hediff.Part);
-				}
-				List<RealmHediff> list7 = list6;
-				RealmHediff realmHediff = new RealmHediff();
-				realmHediff.hediffDefName = hediff.def.defName;
-				realmHediff.bodyPartIndex = bodyPartIndex;
-				realmHediff.immunity = ((immunityRecord != null) ? immunityRecord.immunity : float.NaN);
-				ThingDef source = hediff.source;
-				realmHediff.sourceDefName = ((source != null) ? source.defName : null);
-				realmHediff.ageTicks = hediff.ageTicks;
-				realmHediff.severity = hediff.Severity;
-				list7.Add(realmHediff);
-				realmPawn.hediffs = list6;
-			}
-			PawnHealthState state = pawn.health.State;
-			Dictionary<string, int> dictionary = new Dictionary<string, int>();
-			if (pawn.training != null)
-			{
-				List<RealmTrainingRecord> list8 = new List<RealmTrainingRecord>();
-				foreach (TrainableDef trainableDef in TrainableUtility.TrainableDefsInListOrder)
-				{
-					list8.Add(new RealmTrainingRecord
-					{
-						trainingDefLabel = trainableDef.defName,
-						learned = pawn.training.HasLearned(trainableDef),
-						wanted = pawn.training.GetWanted(trainableDef)
-					});
-				}
-				realmPawn.training = list8;
-			}
-			if (pawn.workSettings != null)
-			{
-				foreach (WorkTypeDef workTypeDef in DefDatabase<WorkTypeDef>.AllDefs)
-				{
-					dictionary.Add(workTypeDef.defName, pawn.workSettings.GetPriority(workTypeDef));
-				}
-			}
-			return realmPawn;
-		}
+    // Token: 0x02000015 RID: 21
+    [Serializable]
+    public class RealmPawn
+    {
+        // Token: 0x0400003B RID: 59
+        public string adulthoodKey;
 
-		// Token: 0x06000038 RID: 56 RVA: 0x000030B0 File Offset: 0x000012B0
-		public Pawn FromRealmPawn(RealmData realmData)
-		{
-			PawnKindDef named = DefDatabase<PawnKindDef>.GetNamed(this.kindDefName, true);
-			Pawn pawn = (Pawn)ThingMaker.MakeThing(named.race, null);
-			foreach (Pawn pawn2 in Find.WorldPawns.ForcefullyKeptPawns)
-			{
-				Pawn_HealthTracker health = pawn2.health;
-				float? num;
-				if (health == null)
-				{
-					num = null;
-				}
-				else
-				{
-					HediffSet hediffSet = health.hediffSet;
-					if (hediffSet == null)
-					{
-						num = null;
-					}
-					else
-					{
-						Hediff firstHediffOfDef = hediffSet.GetFirstHediffOfDef(PhiHediffDefOf.Phi_Key, false);
-						num = ((firstHediffOfDef != null) ? new float?(firstHediffOfDef.Severity) : null);
-					}
-				}
-				float num2 = num ?? -1f;
-				List<RealmHediff> list = this.hediffs;
-				float? num3;
-				if (list == null)
-				{
-					num3 = null;
-				}
-				else
-				{
-					RealmHediff realmHediff = list.First((RealmHediff h) => h.hediffDefName == PhiHediffDefOf.Phi_Key.defName);
-					num3 = ((realmHediff != null) ? new float?(realmHediff.severity) : null);
-				}
-				if (num2 == num3)
-				{
-					pawn = pawn2;
-					break;
-				}
-			}
-			pawn.kindDef = named;
-			pawn.SetFactionDirect(Faction.OfPlayer);
-			PawnComponentsUtility.CreateInitialComponents(pawn);
-			Name name = pawn.Name;
-			switch (this.name.Count<string>())
-			{
-			case 1:
-				name = new NameSingle(this.name[0], false);
-				break;
-			case 2:
-				name = new NameTriple(this.name[0], this.name[1], this.name[1]);
-				break;
-			case 3:
-				name = new NameTriple(this.name[0], this.name[1], this.name[2]);
-				break;
-			}
-			pawn.Name = name;
-			pawn.gender = this.gender;
-			pawn.ageTracker.AgeBiologicalTicks = this.ageBiologicalTicks;
-			pawn.ageTracker.AgeChronologicalTicks = this.ageChronologicalTicks;
-			Pawn_StoryTracker story = pawn.story;
-			if (story != null)
-			{
-				story.melanin = this.melanin;
-				story.crownType = this.crownType;
-				story.hairColor = new Color(this.hairColor[0], this.hairColor[1], this.hairColor[2], this.hairColor[3]);
-				if (!BackstoryDatabase.TryGetWithIdentifier(this.childhoodKey, out story.childhood, true))
-				{
-					throw new Exception(string.Format("Couldn't find backstory '{0}'", this.childhoodKey));
-				}
-				if (!string.IsNullOrEmpty(this.adulthoodKey) && !BackstoryDatabase.TryGetWithIdentifier(this.adulthoodKey, out story.adulthood, true))
-				{
-					throw new Exception(string.Format("Couldn't find backstory '{0}'", this.adulthoodKey));
-				}
-				story.bodyType = DefDatabase<BodyTypeDef>.GetNamed(this.bodyTypeDefName, true);
-				story.hairDef = DefDatabase<HairDef>.GetNamed(this.hairDefName, true);
-				story.traits.allTraits.Clear();
-				foreach (RealmTrait realmTrait in this.traits)
-				{
-					TraitDef named2 = DefDatabase<TraitDef>.GetNamed(realmTrait.traitDefName, true);
-					story.traits.GainTrait(new Trait(named2, realmTrait.degree, false));
-				}
-			}
-			if (this.skills != null)
-			{
-				using (IEnumerator<RealmSkillRecord> enumerator3 = this.skills.AsEnumerable<RealmSkillRecord>().GetEnumerator())
-				{
-					while (enumerator3.MoveNext())
-					{
-						RealmSkillRecord item2 = enumerator3.Current;
-						SkillDef skillDef = DefDatabase<SkillDef>.AllDefs.First((SkillDef def) => def.label == item2.skillDefLabel);
-						SkillRecord skill = pawn.skills.GetSkill(skillDef);
-						skill.Level = item2.level;
-						skill.passion = item2.passion;
-					}
-				}
-			}
-			Pawn_WorkSettings workSettings = pawn.workSettings;
-			if (workSettings != null)
-			{
-				workSettings.EnableAndInitialize();
-			}
-			if (this.apparels != null)
-			{
-				Pawn_ApparelTracker pawn_ApparelTracker = new Pawn_ApparelTracker(pawn);
-				foreach (RealmThing realmThing in this.apparels)
-				{
-					Apparel apparel = (Apparel)realmData.FromRealmThing(realmThing);
-					pawn_ApparelTracker.Wear(apparel, true);
-				}
-			}
-			if (this.equipments != null)
-			{
-				Pawn_EquipmentTracker pawn_EquipmentTracker = new Pawn_EquipmentTracker(pawn);
-				foreach (RealmThing realmThing2 in this.equipments)
-				{
-					ThingWithComps newEq = (ThingWithComps)realmData.FromRealmThing(realmThing2);
-					pawn_EquipmentTracker.AddEquipment(newEq);
-				}
-			}
-			if (this.inventory != null)
-			{
-				Pawn_InventoryTracker pawn_InventoryTracker = pawn.inventory;
-				foreach (RealmThing realmThing3 in this.inventory)
-				{
-					Thing item = realmData.FromRealmThing(realmThing3);
-					pawn_InventoryTracker.innerContainer.TryAdd(item, true);
-				}
-			}
-			if (this.hediffs == null)
-			{
-				Log.Warning("RealmHediffs is null in received colonist", false);
-			}
-			foreach (RealmHediff realmHediff2 in (this.hediffs ?? new List<RealmHediff>()))
-			{
-				HediffDef named3 = DefDatabase<HediffDef>.GetNamed(realmHediff2.hediffDefName, true);
-				BodyPartRecord part = null;
-				if (realmHediff2.bodyPartIndex != -1)
-				{
-					part = pawn.RaceProps.body.GetPartAtIndex(realmHediff2.bodyPartIndex);
-				}
-				pawn.health.AddHediff(named3, part, null, null);
-				Hediff hediff = pawn.health.hediffSet.hediffs.Last<Hediff>();
-				hediff.source = ((realmHediff2.sourceDefName == null) ? null : DefDatabase<ThingDef>.GetNamedSilentFail(realmHediff2.sourceDefName));
-				hediff.ageTicks = realmHediff2.ageTicks;
-				hediff.Severity = realmHediff2.severity;
-				if (!float.IsNaN(realmHediff2.immunity) && !pawn.health.immunity.ImmunityRecordExists(named3))
-				{
-					ImmunityHandler immunity = pawn.health.immunity;
-					immunity.GetType().GetMethod("TryAddImmunityRecord", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(immunity, new object[]
-					{
-						named3
-					});
-					immunity.GetImmunityRecord(named3).immunity = realmHediff2.immunity;
-				}
-			}
-			if (this.training != null)
-			{
-				pawn.training = new Pawn_TrainingTracker(pawn);
-				foreach (RealmTrainingRecord realmTrainingRecord in this.training)
-				{
-					TrainableDef named4 = DefDatabase<TrainableDef>.GetNamed(realmTrainingRecord.trainingDefLabel, true);
-					if (realmTrainingRecord.wanted)
-					{
-						pawn.training.SetWantedRecursive(named4, false);
-					}
-					if (realmTrainingRecord.learned)
-					{
-						pawn.training.Train(named4, null, true);
-					}
-				}
-			}
-			FieldInfo field = pawn.health.GetType().GetField("healthState", BindingFlags.Instance | BindingFlags.NonPublic);
-			if (field == null)
-			{
-				Log.Error("Unable to find healthState field", false);
-			}
-			else
-			{
-				field.SetValue(pawn.health, this.healthState);
-			}
-			if (this.workPriorities != null)
-			{
-				foreach (KeyValuePair<string, int> keyValuePair in (this.workPriorities ?? new Dictionary<string, int>()))
-				{
-					WorkTypeDef namedSilentFail = DefDatabase<WorkTypeDef>.GetNamedSilentFail(keyValuePair.Key);
-					if (namedSilentFail == null)
-					{
-						Log.Warning(string.Format("Ignoring unknown workType: {0}", keyValuePair.Key), false);
-					}
-					else
-					{
-						pawn.workSettings.SetPriority(namedSilentFail, keyValuePair.Value);
-					}
-				}
-			}
-			return pawn;
-		}
+        // Token: 0x04000034 RID: 52
+        public long ageBiologicalTicks;
 
-		// Token: 0x04000032 RID: 50
-		public string kindDefName;
+        // Token: 0x04000035 RID: 53
+        public long ageChronologicalTicks;
 
-		// Token: 0x04000033 RID: 51
-		public string[] name;
+        // Token: 0x04000042 RID: 66
+        public List<RealmThing> apparels;
 
-		// Token: 0x04000034 RID: 52
-		public long ageBiologicalTicks;
+        // Token: 0x04000036 RID: 54
+        public string bodyTypeDefName;
 
-		// Token: 0x04000035 RID: 53
-		public long ageChronologicalTicks;
+        // Token: 0x0400003A RID: 58
+        public string childhoodKey;
 
-		// Token: 0x04000036 RID: 54
-		public string bodyTypeDefName;
+        // Token: 0x04000038 RID: 56
+        public CrownType crownType;
 
-		// Token: 0x04000037 RID: 55
-		public float[] hairColor;
+        // Token: 0x04000041 RID: 65
+        public List<RealmThing> equipments;
 
-		// Token: 0x04000038 RID: 56
-		public CrownType crownType;
+        // Token: 0x0400003F RID: 63
+        public Gender gender;
 
-		// Token: 0x04000039 RID: 57
-		public string hairDefName;
+        // Token: 0x04000037 RID: 55
+        public float[] hairColor;
 
-		// Token: 0x0400003A RID: 58
-		public string childhoodKey;
+        // Token: 0x04000039 RID: 57
+        public string hairDefName;
 
-		// Token: 0x0400003B RID: 59
-		public string adulthoodKey;
+        // Token: 0x04000045 RID: 69
+        public byte healthState = 2;
 
-		// Token: 0x0400003C RID: 60
-		public List<RealmSkillRecord> skills;
+        // Token: 0x04000044 RID: 68
+        public List<RealmHediff> hediffs;
 
-		// Token: 0x0400003D RID: 61
-		public List<RealmTrainingRecord> training;
+        // Token: 0x04000043 RID: 67
+        public List<RealmThing> inventory;
 
-		// Token: 0x0400003E RID: 62
-		public List<RealmTrait> traits;
+        // Token: 0x04000032 RID: 50
+        public string kindDefName;
 
-		// Token: 0x0400003F RID: 63
-		public Gender gender;
+        // Token: 0x04000040 RID: 64
+        public float melanin;
 
-		// Token: 0x04000040 RID: 64
-		public float melanin;
+        // Token: 0x04000033 RID: 51
+        public string[] name;
 
-		// Token: 0x04000041 RID: 65
-		public List<RealmThing> equipments;
+        // Token: 0x0400003C RID: 60
+        public List<RealmSkillRecord> skills;
 
-		// Token: 0x04000042 RID: 66
-		public List<RealmThing> apparels;
+        // Token: 0x0400003D RID: 61
+        public List<RealmTrainingRecord> training;
 
-		// Token: 0x04000043 RID: 67
-		public List<RealmThing> inventory;
+        // Token: 0x0400003E RID: 62
+        public List<RealmTrait> traits;
 
-		// Token: 0x04000044 RID: 68
-		public List<RealmHediff> hediffs;
+        // Token: 0x04000046 RID: 70
+        public Dictionary<string, int> workPriorities;
 
-		// Token: 0x04000045 RID: 69
-		public byte healthState = 2;
+        // Token: 0x06000037 RID: 55 RVA: 0x000029D0 File Offset: 0x00000BD0
+        public static RealmPawn ToRealmPawn(Pawn pawn, RealmData realmData)
+        {
+            var realmPawn = new RealmPawn();
+            var array = pawn.Name.ToString().Split(' ');
+            if (array.Length == 3)
+            {
+                array[1] = array[1].Replace("'", "");
+            }
 
-		// Token: 0x04000046 RID: 70
-		public Dictionary<string, int> workPriorities;
-	}
+            realmPawn.name = array;
+            realmPawn.kindDefName = pawn.kindDef.defName;
+            realmPawn.ageBiologicalTicks = pawn.ageTracker.AgeBiologicalTicks;
+            realmPawn.ageChronologicalTicks = pawn.ageTracker.AgeChronologicalTicks;
+            realmPawn.gender = pawn.gender;
+            if (!pawn.health.hediffSet.HasHediff(PhiHediffDefOf.Phi_Key))
+            {
+                pawn.health.AddHediff(PhiHediffDefOf.Phi_Key);
+                pawn.health.hediffSet.GetFirstHediffOfDef(PhiHediffDefOf.Phi_Key).Severity =
+                    Rand.Range(0f, float.MaxValue);
+            }
+
+            if (pawn.skills != null)
+            {
+                var list = new List<RealmSkillRecord>();
+                foreach (var skillRecord in pawn.skills.skills)
+                {
+                    list.Add(new RealmSkillRecord
+                    {
+                        skillDefLabel = skillRecord.def.label,
+                        level = skillRecord.Level,
+                        passion = skillRecord.passion
+                    });
+                }
+
+                realmPawn.skills = list;
+            }
+
+            if (pawn.story != null)
+            {
+                var list2 = new List<RealmTrait>();
+                foreach (var trait in pawn.story.traits.allTraits)
+                {
+                    list2.Add(new RealmTrait
+                    {
+                        traitDefName = trait.def.defName,
+                        degree = trait.Degree
+                    });
+                }
+
+                realmPawn.traits = list2;
+                var color = pawn.story.hairColor;
+                realmPawn.hairColor = new[]
+                {
+                    color.r,
+                    color.g,
+                    color.b,
+                    color.a
+                };
+                realmPawn.bodyTypeDefName = pawn.story.bodyType.defName;
+                realmPawn.crownType = pawn.story.crownType;
+                realmPawn.hairDefName = pawn.story.hairDef.defName;
+                realmPawn.childhoodKey = pawn.story.childhood.identifier;
+                var realmPawn2 = realmPawn;
+                var adulthood = pawn.story.adulthood;
+                realmPawn2.adulthoodKey = adulthood?.identifier;
+                realmPawn.melanin = pawn.story.melanin;
+            }
+
+            if (pawn.equipment != null)
+            {
+                var list3 = new List<RealmThing>();
+                foreach (var thing in pawn.equipment.AllEquipmentListForReading)
+                {
+                    list3.Add(realmData.ToRealmThing(thing));
+                }
+
+                realmPawn.equipments = list3;
+            }
+
+            if (pawn.apparel != null)
+            {
+                var list4 = new List<RealmThing>();
+                foreach (var thing2 in pawn.apparel.WornApparel)
+                {
+                    list4.Add(realmData.ToRealmThing(thing2));
+                }
+
+                realmPawn.apparels = list4;
+            }
+
+            if (pawn.inventory != null)
+            {
+                var list5 = new List<RealmThing>();
+                foreach (var thing3 in pawn.inventory.innerContainer)
+                {
+                    list5.Add(realmData.ToRealmThing(thing3));
+                }
+
+                realmPawn.inventory = list5;
+            }
+
+            var list6 = new List<RealmHediff>();
+            foreach (var hediff in pawn.health.hediffSet.hediffs)
+            {
+                var immunityRecord = pawn.health.immunity.GetImmunityRecord(hediff.def);
+                var bodyPartIndex = -1;
+                var part = hediff.Part;
+                if (part?.def != null)
+                {
+                    if (!pawn.RaceProps.body.AllParts.Contains(hediff.Part))
+                    {
+                        var format = "Skipping bodypart {0}, not found in body.";
+                        var part2 = hediff.Part;
+                        object arg;
+                        if (part2 == null)
+                        {
+                            arg = null;
+                        }
+                        else
+                        {
+                            var def = part2.def;
+                            arg = def?.defName;
+                        }
+
+                        Log.Error(string.Format(format, arg));
+                        continue;
+                    }
+
+                    bodyPartIndex = pawn.RaceProps.body.GetIndexOfPart(hediff.Part);
+                }
+
+                var list7 = list6;
+                var realmHediff = new RealmHediff
+                {
+                    hediffDefName = hediff.def.defName,
+                    bodyPartIndex = bodyPartIndex,
+                    immunity = immunityRecord?.immunity ?? float.NaN
+                };
+                var source = hediff.source;
+                realmHediff.sourceDefName = source?.defName;
+                realmHediff.ageTicks = hediff.ageTicks;
+                realmHediff.severity = hediff.Severity;
+                list7.Add(realmHediff);
+                realmPawn.hediffs = list6;
+            }
+
+            var unused = pawn.health.State;
+            var dictionary = new Dictionary<string, int>();
+            if (pawn.training != null)
+            {
+                var list8 = new List<RealmTrainingRecord>();
+                foreach (var trainableDef in TrainableUtility.TrainableDefsInListOrder)
+                {
+                    list8.Add(new RealmTrainingRecord
+                    {
+                        trainingDefLabel = trainableDef.defName,
+                        learned = pawn.training.HasLearned(trainableDef),
+                        wanted = pawn.training.GetWanted(trainableDef)
+                    });
+                }
+
+                realmPawn.training = list8;
+            }
+
+            if (pawn.workSettings == null)
+            {
+                return realmPawn;
+            }
+
+            foreach (var workTypeDef in DefDatabase<WorkTypeDef>.AllDefs)
+            {
+                dictionary.Add(workTypeDef.defName, pawn.workSettings.GetPriority(workTypeDef));
+            }
+
+            return realmPawn;
+        }
+
+        // Token: 0x06000038 RID: 56 RVA: 0x000030B0 File Offset: 0x000012B0
+        public Pawn FromRealmPawn(RealmData realmData)
+        {
+            var named = DefDatabase<PawnKindDef>.GetNamed(kindDefName);
+            var pawn = (Pawn) ThingMaker.MakeThing(named.race);
+            foreach (var pawn2 in Find.WorldPawns.ForcefullyKeptPawns)
+            {
+                var health = pawn2.health;
+                float? num;
+                if (health == null)
+                {
+                    num = null;
+                }
+                else
+                {
+                    var hediffSet = health.hediffSet;
+                    if (hediffSet == null)
+                    {
+                        num = null;
+                    }
+                    else
+                    {
+                        var firstHediffOfDef = hediffSet.GetFirstHediffOfDef(PhiHediffDefOf.Phi_Key);
+                        num = firstHediffOfDef != null ? new float?(firstHediffOfDef.Severity) : null;
+                    }
+                }
+
+                var num2 = num ?? -1f;
+                var list = hediffs;
+                float? num3;
+                if (list == null)
+                {
+                    num3 = null;
+                }
+                else
+                {
+                    var realmHediff = list.First(h => h.hediffDefName == PhiHediffDefOf.Phi_Key.defName);
+                    num3 = realmHediff != null ? new float?(realmHediff.severity) : null;
+                }
+
+                if (num2 != num3)
+                {
+                    continue;
+                }
+
+                pawn = pawn2;
+                break;
+            }
+
+            pawn.kindDef = named;
+            pawn.SetFactionDirect(Faction.OfPlayer);
+            PawnComponentsUtility.CreateInitialComponents(pawn);
+            var pawnName = pawn.Name;
+            switch (name.Length)
+            {
+                case 1:
+                    pawnName = new NameSingle(name[0]);
+                    break;
+                case 2:
+                    pawnName = new NameTriple(name[0], name[1], name[1]);
+                    break;
+                case 3:
+                    pawnName = new NameTriple(name[0], name[1], name[2]);
+                    break;
+            }
+
+            pawn.Name = pawnName;
+            pawn.gender = gender;
+            pawn.ageTracker.AgeBiologicalTicks = ageBiologicalTicks;
+            pawn.ageTracker.AgeChronologicalTicks = ageChronologicalTicks;
+            var story = pawn.story;
+            if (story != null)
+            {
+                story.melanin = melanin;
+                story.crownType = crownType;
+                story.hairColor = new Color(hairColor[0], hairColor[1], hairColor[2], hairColor[3]);
+                if (!BackstoryDatabase.TryGetWithIdentifier(childhoodKey, out story.childhood))
+                {
+                    throw new Exception($"Couldn't find backstory '{childhoodKey}'");
+                }
+
+                if (!string.IsNullOrEmpty(adulthoodKey) &&
+                    !BackstoryDatabase.TryGetWithIdentifier(adulthoodKey, out story.adulthood))
+                {
+                    throw new Exception($"Couldn't find backstory '{adulthoodKey}'");
+                }
+
+                story.bodyType = DefDatabase<BodyTypeDef>.GetNamed(bodyTypeDefName);
+                story.hairDef = DefDatabase<HairDef>.GetNamed(hairDefName);
+                story.traits.allTraits.Clear();
+                foreach (var realmTrait in traits)
+                {
+                    var named2 = DefDatabase<TraitDef>.GetNamed(realmTrait.traitDefName);
+                    story.traits.GainTrait(new Trait(named2, realmTrait.degree));
+                }
+            }
+
+            if (skills != null)
+            {
+                using var enumerator3 = skills.AsEnumerable().GetEnumerator();
+                while (enumerator3.MoveNext())
+                {
+                    var item2 = enumerator3.Current;
+                    var skillDef = DefDatabase<SkillDef>.AllDefs.First(def => def.label == item2?.skillDefLabel);
+                    var skill = pawn.skills.GetSkill(skillDef);
+                    if (item2 == null)
+                    {
+                        continue;
+                    }
+
+                    skill.Level = item2.level;
+                    skill.passion = item2.passion;
+                }
+            }
+
+            var workSettings = pawn.workSettings;
+            workSettings?.EnableAndInitialize();
+
+            if (apparels != null)
+            {
+                var pawn_ApparelTracker = new Pawn_ApparelTracker(pawn);
+                foreach (var realmThing in apparels)
+                {
+                    var apparel = (Apparel) realmData.FromRealmThing(realmThing);
+                    pawn_ApparelTracker.Wear(apparel);
+                }
+            }
+
+            if (equipments != null)
+            {
+                var pawn_EquipmentTracker = new Pawn_EquipmentTracker(pawn);
+                foreach (var realmThing2 in equipments)
+                {
+                    var newEq = (ThingWithComps) realmData.FromRealmThing(realmThing2);
+                    pawn_EquipmentTracker.AddEquipment(newEq);
+                }
+            }
+
+            if (inventory != null)
+            {
+                var pawn_InventoryTracker = pawn.inventory;
+                foreach (var realmThing3 in inventory)
+                {
+                    var item = realmData.FromRealmThing(realmThing3);
+                    pawn_InventoryTracker.innerContainer.TryAdd(item);
+                }
+            }
+
+            if (hediffs == null)
+            {
+                Log.Warning("RealmHediffs is null in received colonist");
+            }
+
+            foreach (var realmHediff2 in hediffs ?? new List<RealmHediff>())
+            {
+                var named3 = DefDatabase<HediffDef>.GetNamed(realmHediff2.hediffDefName);
+                BodyPartRecord part = null;
+                if (realmHediff2.bodyPartIndex != -1)
+                {
+                    part = pawn.RaceProps.body.GetPartAtIndex(realmHediff2.bodyPartIndex);
+                }
+
+                pawn.health.AddHediff(named3, part);
+                var hediff = pawn.health.hediffSet.hediffs.Last();
+                hediff.source = realmHediff2.sourceDefName == null
+                    ? null
+                    : DefDatabase<ThingDef>.GetNamedSilentFail(realmHediff2.sourceDefName);
+                hediff.ageTicks = realmHediff2.ageTicks;
+                hediff.Severity = realmHediff2.severity;
+                if (float.IsNaN(realmHediff2.immunity) || pawn.health.immunity.ImmunityRecordExists(named3))
+                {
+                    continue;
+                }
+
+                var immunity = pawn.health.immunity;
+                immunity.GetType().GetMethod("TryAddImmunityRecord", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(immunity, new object[]
+                    {
+                        named3
+                    });
+                immunity.GetImmunityRecord(named3).immunity = realmHediff2.immunity;
+            }
+
+            if (training != null)
+            {
+                pawn.training = new Pawn_TrainingTracker(pawn);
+                foreach (var realmTrainingRecord in training)
+                {
+                    var named4 = DefDatabase<TrainableDef>.GetNamed(realmTrainingRecord.trainingDefLabel);
+                    if (realmTrainingRecord.wanted)
+                    {
+                        pawn.training.SetWantedRecursive(named4, false);
+                    }
+
+                    if (realmTrainingRecord.learned)
+                    {
+                        pawn.training.Train(named4, null, true);
+                    }
+                }
+            }
+
+            var field = pawn.health.GetType().GetField("healthState", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null)
+            {
+                Log.Error("Unable to find healthState field");
+            }
+            else
+            {
+                field.SetValue(pawn.health, healthState);
+            }
+
+            if (workPriorities == null)
+            {
+                return pawn;
+            }
+
+            foreach (var keyValuePair in workPriorities ?? new Dictionary<string, int>())
+            {
+                var namedSilentFail = DefDatabase<WorkTypeDef>.GetNamedSilentFail(keyValuePair.Key);
+                if (namedSilentFail == null)
+                {
+                    Log.Warning($"Ignoring unknown workType: {keyValuePair.Key}");
+                }
+                else
+                {
+                    pawn.workSettings.SetPriority(namedSilentFail, keyValuePair.Value);
+                }
+            }
+
+            return pawn;
+        }
+    }
 }
