@@ -69,7 +69,20 @@ namespace PhiClient
                 Disconnect();
             }
 
-            client = new Client(serverAddress, 16180);
+            // Edited by [NOT-FOUND-404-UI]
+            // ---------------------------------------------------------------
+            int serverPort = new int();
+            if (0 <= serverAddress.IndexOf(":")) {
+                string[] temp = new string[2];
+                temp = serverAddress.Split(':');
+                serverAddress = temp[0];
+                serverPort = int.Parse(temp[1]);
+            } else {
+                serverPort = PORT;
+            }
+            client = new Client(serverAddress, serverPort);
+            // ---------------------------------------------------------------
+            //client = new Client(serverAddress,16180);
             client.Connection += ConnectionCallback;
             client.Message += MessageCallback;
             client.Disconnection += DisconnectCallback;
