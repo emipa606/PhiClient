@@ -1,18 +1,13 @@
-﻿using System;
+using System;
 
-namespace PhiClient
+namespace PhiClient;
+
+[Serializable]
+public class UserPreferences
 {
-    // Token: 0x02000022 RID: 34
-    [Serializable]
-    public class UserPreferences
-    {
-        // Token: 0x04000075 RID: 117
-        public bool receiveAnimals;
+    public bool receiveAnimals;
 
-        // Token: 0x04000074 RID: 116
-        public bool receiveColonists;
+    public bool receiveColonists;
 
-        // Token: 0x04000073 RID: 115
-        public bool receiveItems = true;
-    }
+    public bool receiveItems = true;
 }

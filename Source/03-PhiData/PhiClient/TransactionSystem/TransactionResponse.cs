@@ -1,21 +1,14 @@
-﻿namespace PhiClient.TransactionSystem
+namespace PhiClient.TransactionSystem;
+
+public enum TransactionResponse
 {
-    // Token: 0x0200002A RID: 42
-    public enum TransactionResponse
-    {
-        // Token: 0x0400008D RID: 141
-        WAITING,
+    WAITING,
 
-        // Token: 0x0400008E RID: 142
-        ACCEPTED,
+    ACCEPTED,
 
-        // Token: 0x0400008F RID: 143
-        DECLINED,
+    DECLINED,
 
-        // Token: 0x04000090 RID: 144
-        INTERRUPTED,
+    INTERRUPTED,
 
-        // Token: 0x04000091 RID: 145
-        TOOFAST
-    }
+    TOOFAST
 }

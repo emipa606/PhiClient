@@ -1,18 +1,13 @@
-﻿using System;
+using System;
 
-namespace PhiClient
+namespace PhiClient;
+
+[Serializable]
+public class RealmTrainingRecord
 {
-    // Token: 0x02000018 RID: 24
-    [Serializable]
-    public class RealmTrainingRecord
-    {
-        // Token: 0x04000053 RID: 83
-        public bool learned;
+    public bool learned;
 
-        // Token: 0x04000051 RID: 81
-        public string trainingDefLabel;
+    public string trainingDefLabel;
 
-        // Token: 0x04000052 RID: 82
-        public bool wanted;
-    }
+    public bool wanted;
 }

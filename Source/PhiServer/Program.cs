@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using PhiClient;
 using PhiClient.TransactionSystem;
@@ -13,17 +14,17 @@ namespace PhiServer
 
         private readonly object lockProcessPacket = new object();
         private readonly Dictionary<int, string> userKeys = new Dictionary<int, string>();
-        private LogLevel logLevel;
+        private LogLevel level;
         private RealmData realmData;
         private Server server;
 
         public void Start(IPAddress ipAddress, int port, LogLevel logLevel)
         {
-            this.logLevel = logLevel;
+            level = logLevel;
 
             server = new Server(ipAddress, port);
             server.Start();
-            Log(LogLevel.INFO, $"Server launched on port {port}");
+            Log(LogLevel.INFO, $"Server launched on port {port}, loglevel {level}");
 
             server.Connection += ConnectionCallback;
             server.Message += MessageCallback;
@@ -39,25 +40,23 @@ namespace PhiServer
             Log(LogLevel.INFO, "Connection from " + client.ID);
         }
 
-        private void Log(LogLevel level, string message)
+        private void Log(LogLevel logLevel, string message)
         {
-            if (level < logLevel)
+            if (logLevel < level)
             {
                 return;
             }
 
             var tag = "";
-            if (level == LogLevel.DEBUG)
+            switch (logLevel)
             {
-                tag = "DEBUG";
-            }
-            else if (level == LogLevel.ERROR)
-            {
-                tag = "DEBUG";
-            }
-            else if (level == LogLevel.INFO)
-            {
-                tag = "INFO";
+                case LogLevel.DEBUG:
+                case LogLevel.ERROR:
+                    tag = "DEBUG";
+                    break;
+                case LogLevel.INFO:
+                    tag = "INFO";
+                    break;
             }
 
             Console.WriteLine("[{0}] [{1}] {2}", DateTime.Now, tag, message);
@@ -97,7 +96,7 @@ namespace PhiServer
             Log(LogLevel.INFO, $"{user.name} disconnected");
             connectedUsers.Remove(client);
             user.connected = false;
-            realmData.BroadcastPacket(new UserConnectedPacket {user = user, connected = false});
+            realmData.BroadcastPacket(new UserConnectedPacket { user = user, connected = false });
         }
 
         private void MessageCallback(ServerClient client, byte[] data)
@@ -137,14 +136,15 @@ namespace PhiServer
                         user.connected = true;
 
                         // We send a notify to all users connected about the new user
-                        realmData.BroadcastPacketExcept(new NewUserPacket {user = user}, user);
+                        realmData.BroadcastPacketExcept(new NewUserPacket { user = user }, user);
                     }
                     else
                     {
                         user.connected = true;
 
                         // We send a connect notification to all users
-                        realmData.BroadcastPacketExcept(new UserConnectedPacket {user = user, connected = true}, user);
+                        realmData.BroadcastPacketExcept(new UserConnectedPacket { user = user, connected = true },
+                            user);
                     }
 
                     connectedUsers.Add(client, user);
@@ -152,7 +152,7 @@ namespace PhiServer
                         $"Client {client.ID} connected as {user.name} ({user.id})");
 
                     // We respond with a StatePacket that contains all synchronisation data
-                    SendPacket(client, user, new SynchronisationPacket {user = user, realmData = realmData});
+                    SendPacket(client, user, new SynchronisationPacket { user = user, realmData = realmData });
                 }
                 else if (packet is StartTransactionPacket transactionPacket)
                 {
@@ -237,15 +237,32 @@ namespace PhiServer
             var program = new Program();
 
             var logLevel = LogLevel.ERROR;
+            var port = 16180;
             if (args.Length > 0)
             {
-                if (args[0].Equals("debug"))
+                foreach (var arg in args)
                 {
-                    logLevel = LogLevel.DEBUG;
+                    if (arg.Equals("debug"))
+                    {
+                        logLevel = LogLevel.DEBUG;
+                        continue;
+                    }
+
+                    if (!arg.All(char.IsNumber))
+                    {
+                        Console.Write(
+                            $"Unknown command {arg}. Valid commands are\ndebug - will log all events\nportnumber - a valid portnumber for the server to start on\n");
+                        continue;
+                    }
+
+                    if (int.TryParse(arg, out var customPort) && customPort > 0 && customPort <= 65535)
+                    {
+                        port = customPort;
+                    }
                 }
             }
 
-            program.Start(IPAddress.Any, 16180, logLevel);
+            program.Start(IPAddress.Any, port, logLevel);
 
             Console.Read();
         }

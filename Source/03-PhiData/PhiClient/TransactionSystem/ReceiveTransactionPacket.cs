@@ -1,26 +1,22 @@
-﻿using System;
+using System;
 
-namespace PhiClient.TransactionSystem
+namespace PhiClient.TransactionSystem;
+
+[Serializable]
+public class ReceiveTransactionPacket : Packet
 {
-    // Token: 0x02000027 RID: 39
-    [Serializable]
-    public class ReceiveTransactionPacket : Packet
+    public Transaction transaction;
+
+    public override void Apply(User user, RealmData realmData)
     {
-        // Token: 0x04000084 RID: 132
-        public Transaction transaction;
-
-        // Token: 0x0600006A RID: 106 RVA: 0x00004534 File Offset: 0x00002734
-        public override void Apply(User user, RealmData realmData)
+        if (realmData.TryFindTransaction(transaction.id, transaction.sender.id) == null)
         {
-            if (realmData.TryFindTransaction(transaction.id, transaction.sender.id) == null)
-            {
-                realmData.transactions.Add(transaction);
-            }
+            realmData.transactions.Add(transaction);
+        }
 
-            if (user == transaction.receiver)
-            {
-                transaction.OnStartReceiver(realmData);
-            }
+        if (user == transaction.receiver)
+        {
+            transaction.OnStartReceiver(realmData);
         }
     }
 }
