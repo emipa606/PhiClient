@@ -10,6 +10,6 @@ public class AuthentificationErrorPacket : Packet
 
     public override void Apply(User user, RealmData realmData)
     {
-        Log.Warning("Couldn't authenticate:" + error);
+        Log.Warning($"Couldn't authenticate:{error}");
     }
 }

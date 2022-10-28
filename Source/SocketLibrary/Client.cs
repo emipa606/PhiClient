@@ -9,7 +9,7 @@ public class Client
 
     public Client(string address, int port)
     {
-        client = new WebSocket(string.Concat("ws://", address, ":", port, "/"));
+        client = new WebSocket($"ws://{address}:{port}/");
         client.OnMessage += MessageCallback;
         client.OnOpen += OpenCallback;
         client.OnClose += CloseCallback;

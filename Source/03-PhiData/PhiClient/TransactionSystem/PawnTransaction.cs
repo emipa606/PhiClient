@@ -87,7 +87,7 @@ public class PawnTransaction : Transaction
 
         if (state == TransactionResponse.INTERRUPTED)
         {
-            Messages.Message("Unexpected interruption during item transaction with " + sender.name,
+            Messages.Message($"Unexpected interruption during item transaction with {sender.name}",
                 MessageTypeDefOf.RejectInput);
             return;
         }
@@ -106,19 +106,19 @@ public class PawnTransaction : Transaction
         {
             pawn.DeSpawn();
             Find.WorldPawns.PassToWorld(pawn, PawnDiscardDecideMode.KeepForever);
-            Messages.Message(receiver.name + " accepted your items", MessageTypeDefOf.NeutralEvent);
+            Messages.Message($"{receiver.name} accepted your items", MessageTypeDefOf.NeutralEvent);
             return;
         }
 
         if (state == TransactionResponse.DECLINED)
         {
-            Messages.Message(receiver.name + " declined your items", MessageTypeDefOf.RejectInput);
+            Messages.Message($"{receiver.name} declined your items", MessageTypeDefOf.RejectInput);
             return;
         }
 
         if (state == TransactionResponse.INTERRUPTED)
         {
-            Messages.Message("Unexpected interruption during item transaction with " + receiver.name,
+            Messages.Message($"Unexpected interruption during item transaction with {receiver.name}",
                 MessageTypeDefOf.RejectInput);
             return;
         }
@@ -126,8 +126,7 @@ public class PawnTransaction : Transaction
         if (state == TransactionResponse.TOOFAST)
         {
             Messages.Message(
-                "Transaction with " + receiver.name +
-                " was declined by the server. Are you sending colonists too quickly?",
+                $"Transaction with {receiver.name} was declined by the server. Are you sending colonists too quickly?",
                 MessageTypeDefOf.RejectInput);
         }
     }

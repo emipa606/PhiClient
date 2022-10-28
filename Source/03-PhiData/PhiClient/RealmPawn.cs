@@ -23,7 +23,7 @@ public class RealmPawn
 
     public string childhoodKey;
 
-    public CrownType crownType;
+    public HeadTypeDef crownType;
 
     public List<RealmThing> equipments;
 
@@ -103,7 +103,7 @@ public class RealmPawn
             }
 
             realmPawn.traits = list2;
-            var color = pawn.story.hairColor;
+            var color = pawn.story.HairColor;
             realmPawn.hairColor = new[]
             {
                 color.r,
@@ -112,11 +112,11 @@ public class RealmPawn
                 color.a
             };
             realmPawn.bodyTypeDefName = pawn.story.bodyType.defName;
-            realmPawn.crownType = pawn.story.crownType;
+            realmPawn.crownType = pawn.story.headType;
             realmPawn.hairDefName = pawn.story.hairDef.defName;
-            realmPawn.childhoodKey = pawn.story.childhood.identifier;
+            realmPawn.childhoodKey = pawn.story.Childhood.identifier;
             var realmPawn2 = realmPawn;
-            var adulthood = pawn.story.adulthood;
+            var adulthood = pawn.story.Adulthood;
             realmPawn2.adulthoodKey = adulthood?.identifier;
             realmPawn.melanin = pawn.story.melanin;
         }
@@ -303,18 +303,12 @@ public class RealmPawn
         if (story != null)
         {
             story.melanin = melanin;
-            story.crownType = crownType;
-            story.hairColor = new Color(hairColor[0], hairColor[1], hairColor[2], hairColor[3]);
-            if (!BackstoryDatabase.TryGetWithIdentifier(childhoodKey, out story.childhood))
-            {
-                throw new Exception($"Couldn't find backstory '{childhoodKey}'");
-            }
-
-            if (!string.IsNullOrEmpty(adulthoodKey) &&
-                !BackstoryDatabase.TryGetWithIdentifier(adulthoodKey, out story.adulthood))
-            {
-                throw new Exception($"Couldn't find backstory '{adulthoodKey}'");
-            }
+            story.headType = crownType;
+            story.HairColor = new Color(hairColor[0], hairColor[1], hairColor[2], hairColor[3]);
+            story.Childhood =
+                DefDatabase<BackstoryDef>.AllDefsListForReading.First(def => def.identifier == childhoodKey);
+            story.Adulthood =
+                DefDatabase<BackstoryDef>.AllDefsListForReading.First(def => def.identifier == adulthoodKey);
 
             story.bodyType = DefDatabase<BodyTypeDef>.GetNamed(bodyTypeDefName);
             story.hairDef = DefDatabase<HairDef>.GetNamed(hairDefName);

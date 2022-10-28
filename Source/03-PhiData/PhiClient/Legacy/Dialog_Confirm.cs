@@ -90,7 +90,7 @@ public class Dialog_Confirm : Window
         }
 
         var label = !InteractionDelayExpired
-            ? confirmLabel + "(" + Mathf.Ceil(TimeUntilInteractive).ToString("F0") + ")"
+            ? $"{confirmLabel}({Mathf.Ceil(TimeUntilInteractive):F0})"
             : confirmLabel;
         if (Widgets.ButtonText(
                 new Rect((inRect.width / 2f) + 20f, inRect.height - 35f, (inRect.width / 2f) - 20f, 35f), label, true,

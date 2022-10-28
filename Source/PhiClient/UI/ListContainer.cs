@@ -210,21 +210,11 @@ internal class ListContainer : Displayable
 
     public override bool IsFluidHeight()
     {
-        if (flow == ListFlow.COLUMN)
-        {
-            return children.Any(c => c.IsFluidHeight());
-        }
-
-        return true;
+        return flow != ListFlow.COLUMN || children.Any(c => c.IsFluidHeight());
     }
 
     public override bool IsFluidWidth()
     {
-        if (flow == ListFlow.ROW)
-        {
-            return children.Any(c => c.IsFluidWidth());
-        }
-
-        return true;
+        return flow != ListFlow.ROW || children.Any(c => c.IsFluidWidth());
     }
 }

@@ -70,8 +70,7 @@ public class RealmData
         var transaction = TryFindTransaction(transactionId, transactionSenderId);
         if (transaction == null)
         {
-            throw new Exception(string.Concat("Couldn't find Transaction ", transactionId, " from sender ",
-                transactionSenderId));
+            throw new Exception($"Couldn't find Transaction {transactionId} from sender {transactionSenderId}");
         }
 
         return transaction;

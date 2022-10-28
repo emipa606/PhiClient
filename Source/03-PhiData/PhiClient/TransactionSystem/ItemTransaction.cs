@@ -52,7 +52,7 @@ public class ItemTransaction : Transaction
         }).ToArray());
         var window = new Dialog_GeneralChoice(new DialogChoiceConfig
         {
-            text = sender.name + " wants to ship you:\n" + str,
+            text = $"{sender.name} wants to ship you:\n{str}",
             buttonAText = "Accept",
             buttonAAction = delegate
             {
@@ -98,14 +98,14 @@ public class ItemTransaction : Transaction
 
             var intVec = DropCellFinder.RandomDropSpot(Find.CurrentMap);
             DropPodUtility.DropThingsNear(intVec, Find.CurrentMap, list);
-            Find.LetterStack.ReceiveLetter("Ship pod", "A pod was sent from " + sender.name + " containing items",
+            Find.LetterStack.ReceiveLetter("Ship pod", $"A pod was sent from {sender.name} containing items",
                 LetterDefOf.PositiveEvent, new GlobalTargetInfo(intVec, Find.CurrentMap));
             return;
         }
 
         if (state == TransactionResponse.INTERRUPTED)
         {
-            Messages.Message("Unexpected interruption during item transaction with " + sender.name,
+            Messages.Message($"Unexpected interruption during item transaction with {sender.name}",
                 MessageTypeDefOf.RejectInput);
             return;
         }
@@ -148,24 +148,23 @@ public class ItemTransaction : Transaction
                 if (num > 0)
                 {
                     Log.Warning(
-                        string.Concat("Trying to destroy ", keyValuePair.Key[0].LabelShort,
-                            " but couldn't destroy the ", num, " remaining"));
+                        $"Trying to destroy {keyValuePair.Key[0].LabelShort} but couldn't destroy the {num} remaining");
                 }
             }
 
-            Messages.Message(receiver.name + " accepted your items", MessageTypeDefOf.NeutralEvent);
+            Messages.Message($"{receiver.name} accepted your items", MessageTypeDefOf.NeutralEvent);
             return;
         }
 
         if (state == TransactionResponse.DECLINED)
         {
-            Messages.Message(receiver.name + " declined your items", MessageTypeDefOf.RejectInput);
+            Messages.Message($"{receiver.name} declined your items", MessageTypeDefOf.RejectInput);
             return;
         }
 
         if (state == TransactionResponse.INTERRUPTED)
         {
-            Messages.Message("Unexpected interruption during item transaction with " + receiver.name,
+            Messages.Message($"Unexpected interruption during item transaction with {receiver.name}",
                 MessageTypeDefOf.RejectInput);
             return;
         }
@@ -173,8 +172,8 @@ public class ItemTransaction : Transaction
         if (state == TransactionResponse.TOOFAST)
         {
             Messages.Message(
-                "Transaction with " + receiver.name +
-                " was declined by the server. Are you sending items too quickly?", MessageTypeDefOf.RejectInput);
+                $"Transaction with {receiver.name} was declined by the server. Are you sending items too quickly?",
+                MessageTypeDefOf.RejectInput);
         }
     }
 }

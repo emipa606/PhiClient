@@ -6,6 +6,7 @@ Update of Longwelwind And Andrews mod
 https://steamcommunity.com/sharedfiles/filedetails/?id=1474002997
 
 - For help and info on public servers, join the  https://discord.gg/d4Y5xks]Discord - Trading Hub
+- Added the option to use a custom port, thanks NOT-FOUND-404-UI for the input!
 - For the client to be able to connect the server must be running an updated version as well
 You can download it from the GitHub-repo here:
 

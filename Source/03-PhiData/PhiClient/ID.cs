@@ -10,7 +10,7 @@ public class ID
         var e = TryFind(list, id);
         if (e == null)
         {
-            throw new Exception(string.Concat("Entity with ID ", id, " not found in ", list.ToString()));
+            throw new Exception($"Entity with ID {id} not found in {list}");
         }
 
         return e;

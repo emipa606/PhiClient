@@ -16,7 +16,7 @@ public class ChangeNicknamePacket : Packet
         {
             realmData.NotifyPacket(user, new ErrorPacket
             {
-                error = "Nickname " + filteredName + " is already taken"
+                error = $"Nickname {filteredName} is already taken"
             });
             return;
         }

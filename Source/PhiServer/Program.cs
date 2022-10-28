@@ -37,7 +37,7 @@ namespace PhiServer
 
         private void ConnectionCallback(ServerClient client)
         {
-            Log(LogLevel.INFO, "Connection from " + client.ID);
+            Log(LogLevel.INFO, $"Connection from {client.ID}");
         }
 
         private void Log(LogLevel logLevel, string message)
@@ -117,8 +117,8 @@ namespace PhiServer
                     {
                         SendPacket(client, user, new AuthentificationErrorPacket
                             {
-                                error = "Server is version " + RealmData.VERSION + " but client is version " +
-                                        authPacket.version
+                                error =
+                                    $"Server is version {RealmData.VERSION} but client is version {authPacket.version}"
                             }
                         );
                         return;

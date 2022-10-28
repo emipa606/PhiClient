@@ -16,7 +16,7 @@ public static class TextHelper
     {
         foreach (var str in strippedTags)
         {
-            input = new Regex("<\\/?" + str + "(=[\\w#]+)?>").Replace(input, "");
+            input = new Regex($"<\\/?{str}(=[\\w#]+)?>").Replace(input, "");
         }
 
         return input;

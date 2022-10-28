@@ -1,5 +1,8 @@
 # Changelog for PhiClient
 
+1.4.1 - Mod updated for 1.4 and passed autotests.
+
+
 1.3.1 - Added support for using a custom port for the server/client, thanks NOT-FOUND-404-UI for the input
 
 
